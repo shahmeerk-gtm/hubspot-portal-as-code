@@ -5,7 +5,7 @@
 Setting up a HubSpot portal by hand means clicking through dozens of settings screens. Nothing records why a property exists, and nothing stops two portals from drifting apart. This project treats the setup the way engineers treat infrastructure: the config lives in Git, changes are reviewed as diffs, and a `plan` step shows exactly what will change before anything does.
 
 <!-- TODO: add demo.gif — Claude Code running plan → apply → seed against a fresh test account -->
-
+![60 seeded deals in the New Business pipeline, created by this tool](docs/deals.png)
 ## What it manages
 
 | | |
