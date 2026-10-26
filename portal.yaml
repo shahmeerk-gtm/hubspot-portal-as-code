@@ -1,0 +1,127 @@
+# HubSpot portal-as-code
+#
+# This file is the single source of truth for the portal's CRM setup.
+# `python -m portal_as_code plan` shows what would change.
+# `python -m portal_as_code apply` makes the portal match this file.
+#
+# Only things listed here are managed. Anything else in the portal
+# (HubSpot's default properties, other pipelines) is left alone.
+
+property_groups:
+  contacts:
+    - name: gtm_ops
+      label: GTM Ops
+      display_order: 1
+    - name: portal_as_code_system
+      label: Portal-as-Code (system)
+      display_order: 99
+  deals:
+    - name: gtm_ops
+      label: GTM Ops
+      display_order: 1
+    - name: portal_as_code_system
+      label: Portal-as-Code (system)
+      display_order: 99
+
+properties:
+  contacts:
+    - name: icp_tier
+      label: ICP Tier
+      group: gtm_ops
+      type: enumeration
+      field_type: select
+      description: How closely the contact's company matches the ideal customer profile.
+      options: [Tier 1, Tier 2, Tier 3, Not a Fit]
+
+    - name: lead_source_detail
+      label: Lead Source Detail
+      group: gtm_ops
+      type: enumeration
+      field_type: select
+      description: The specific channel that first brought the contact in. More granular than Original Source.
+      options:
+        - Paid Search
+        - LinkedIn Ads
+        - Webinar
+        - Content Download
+        - Outbound Sequence
+        - Referral
+        - Event
+
+    - name: enrichment_status
+      label: Enrichment Status
+      group: gtm_ops
+      type: enumeration
+      field_type: select
+      description: Where the contact is in the enrichment process.
+      options: [Not Enriched, Enriched, Needs Review, Failed]
+
+    - name: enrichment_date
+      label: Enrichment Date
+      group: gtm_ops
+      type: date
+      field_type: date
+      description: When the contact was last enriched.
+
+    - name: first_touch_campaign
+      label: First Touch Campaign
+      group: gtm_ops
+      type: string
+      field_type: text
+      description: The campaign name (utm_campaign) on the contact's first recorded visit.
+
+    # Used by the seed command so it can be re-run without creating duplicates.
+    - name: seed_key
+      label: Seed Key
+      group: portal_as_code_system
+      type: string
+      field_type: text
+      unique: true
+      description: Stable ID for records created by the seed command. Do not edit.
+
+  deals:
+    - name: deal_source
+      label: Deal Source
+      group: gtm_ops
+      type: enumeration
+      field_type: select
+      description: The channel credited with sourcing the deal.
+      options:
+        - Paid Search
+        - LinkedIn Ads
+        - Webinar
+        - Content Download
+        - Outbound Sequence
+        - Referral
+        - Event
+
+    - name: demo_completed_date
+      label: Demo Completed Date
+      group: gtm_ops
+      type: date
+      field_type: date
+      description: When the first product demo was delivered.
+
+    - name: seed_key
+      label: Seed Key
+      group: portal_as_code_system
+      type: string
+      field_type: text
+      unique: true
+      description: Stable ID for records created by the seed command. Do not edit.
+
+pipelines:
+  deals:
+    # Matched by label. To manage HubSpot's built-in pipeline instead,
+    # add `id: default` (useful on tiers that allow only one deal pipeline).
+    - label: New Business
+      display_order: 1
+      stages:
+        # probability 1.0 = closed won, 0.0 = closed lost
+        - { label: Discovery,      probability: 0.1 }
+        - { label: Demo Scheduled, probability: 0.2 }
+        - { label: Demo Completed, probability: 0.4 }
+        - { label: Proposal,       probability: 0.6 }
+        - { label: Negotiation,    probability: 0.8 }
+        - { label: Closed Won,     probability: 1.0 }
+        - { label: Closed Lost,    probability: 0.0 }
