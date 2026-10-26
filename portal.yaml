@@ -47,6 +47,7 @@ properties:
         - Outbound Sequence
         - Referral
         - Event
+        - Partner Referral
 
     - name: enrichment_status
       label: Enrichment Status
@@ -94,6 +95,7 @@ properties:
         - Outbound Sequence
         - Referral
         - Event
+        - Partner Referral
 
     - name: demo_completed_date
       label: Demo Completed Date
