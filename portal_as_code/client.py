@@ -20,6 +20,7 @@ class HubSpotError(RuntimeError):
         self.status = status
         self.body = body
         message = body.get("message") if isinstance(body, dict) else str(body)
+        message = _shorten(str(message))
         hint = ""
         if status == 401:
             hint = " (check HUBSPOT_ACCESS_TOKEN)"
@@ -164,6 +165,13 @@ class HubSpotClient:
     def batch_archive(self, obj: str, ids: list[str]) -> None:
         for chunk in _chunks(ids, 100):
             self.post(f"/crm/v3/objects/{obj}/batch/archive", {"inputs": [{"id": i} for i in chunk]})
+
+
+def _shorten(message: str, limit: int = 400) -> str:
+    """Batch validation errors can be tens of KB; keep the first part readable."""
+    if len(message) <= limit:
+        return message
+    return f"{message[:limit]}... [{len(message) - limit} more characters]"
 
 
 def _chunks(items: list, size: int):

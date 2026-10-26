@@ -43,7 +43,8 @@ Plan: 1 to create, 5 to update, 16 unchanged
 - **Ordered by dependency.** Groups are created before the properties that use them, and pipelines before their stages.
 - **Rate-limit aware.** It retries on HTTP 429 using HubSpot's `Retry-After` header and backs off on server errors. A 403 tells you the token is missing a scope.
 - **Drift detection for CI.** `plan --detailed-exitcode` exits with code 2 when the portal no longer matches the config.
-- **No real data.** Seeded emails use the reserved `.example` domain, so nothing can be sent to a real address.
+- **No real data.** Seeded emails use subdomains of `example.com`, which is reserved for documentation, so nothing can be sent to a real address.
+- **Readable errors.** A rejected batch can return thousands of characters of validation detail; errors are trimmed to the part you need.
 
 ## Quick start
 
@@ -60,7 +61,7 @@ npm install -g @hubspot/cli@latest
 hs account auth
 hs test-account create
 
-# 3. In the test account, create an app with a private access token and these scopes:
+# 3. In the test account, go to Development > Keys > Service keys and create a key with:
 #    crm.schemas.contacts.read/write, crm.schemas.deals.read/write,
 #    crm.objects.contacts.read/write, crm.objects.deals.read/write
 cp .env.example .env    # paste the token into .env
@@ -117,6 +118,12 @@ python -m pytest
 ```
 
 The suite runs against an in-memory fake of the HubSpot API that enforces the rules that matter here, such as requiring a property's group to exist and keeping unique values unique. It covers validation, plan output, apply ordering, idempotency, the seed round trip, rate-limit retries and the CLI. GitHub Actions runs it on every push.
+
+## Notes from the first live run
+
+- `plan` and `apply` worked against a real test account on the first try, and a second `plan` came back clean.
+- `seed` failed on its first run: HubSpot's email validation rejects the reserved `.example` top-level domain, even though it's the textbook choice for fake data. Because the batch upsert is all-or-nothing, nothing partial was written. The fix was to switch to subdomains of `example.com`.
+- The 400 response listed all 100 invalid emails in one message, which buried the actual cause. Errors are now trimmed to the first few hundred characters.
 
 ## What's next
 

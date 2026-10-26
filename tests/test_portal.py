@@ -133,7 +133,7 @@ def test_seed_is_deterministic(config):
     b = seed_mod.generate(*args, today=date(2026, 10, 26))
     assert a == b
     assert len(a.contacts) == 300 and len(a.deals) == 60
-    assert all(c["properties"]["email"].endswith(".example") for c in a.contacts)
+    assert all(c["properties"]["email"].endswith(".example.com") for c in a.contacts)
 
 
 def test_seed_values_are_valid_options(config):

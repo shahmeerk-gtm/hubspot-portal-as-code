@@ -3,8 +3,9 @@
 The same seed number always produces the same records with the same
 `seed_key` values, and records are upserted on `seed_key`, so running
 `seed` twice updates the existing records instead of duplicating them.
-All emails use the reserved .example domain, so nothing can ever be
-sent to a real address.
+All emails use subdomains of example.com, which is reserved for
+documentation (RFC 2606), so nothing can ever be sent to a real address.
+(HubSpot rejects the bare .example TLD as an invalid email.)
 """
 
 from __future__ import annotations
@@ -92,7 +93,7 @@ def generate(
     contacts: list[dict] = []
     by_company: dict[str, list[str]] = {}
     for ci, company in enumerate(companies):
-        domain = company.lower().replace(" ", "") + ".example"
+        domain = company.lower().replace(" ", "") + ".example.com"
         for k in range(contacts_per_company):
             first, last = rng.choice(FIRST), rng.choice(LAST)
             key = f"seed-c-{ci:03d}-{k}"
