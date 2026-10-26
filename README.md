@@ -4,6 +4,8 @@
 
 Setting up a HubSpot portal by hand means clicking through dozens of settings screens. Nothing records why a property exists, and nothing stops two portals from drifting apart. This project treats the setup the way engineers treat infrastructure: the config lives in Git, changes are reviewed as diffs, and a `plan` step shows exactly what will change before anything does.
 
+*Claude Code checks HubSpot's API docs through the HubSpot MCP server, adds a dropdown option in `portal.yaml`, previews the change, and applies it after approval.*
+
 ![Demo](docs/demo.gif)
 
 ![60 seeded deals in the New Business pipeline, created by this tool](docs/deals.png)
